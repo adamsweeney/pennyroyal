@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteConstraintException;
 import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteException;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -22,6 +23,7 @@ import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ExpandableListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -36,18 +38,29 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 public class AddStockFragment extends Fragment implements View.OnClickListener {
+
+    String stockCode;
+    ArrayList<String> stocks;
+    SharedPreferences preferences;
+    int profileId;
 
     AutoCompleteTextView stockAutoComplete;
     EditText boughtSharesEditText;
     EditText priceBoughtEditText;
-    ArrayList<String> stocks;
-    SharedPreferences preferences;
-    String stockCode;
+
+    ExpandableListView previousBuysListView;
+    ExpandableListAdapter listAdapter;
+    List<String> listDataHeader;
+    HashMap<String, List<String>> listHash;
+
 
     public AddStockFragment() {
         stocks = new ArrayList<>();
+        profileId = 0;
     }
 
     @Override
@@ -60,8 +73,48 @@ public class AddStockFragment extends Fragment implements View.OnClickListener {
         boughtSharesEditText = (EditText) v.findViewById(R.id.sharesEditText);
         priceBoughtEditText = (EditText) v.findViewById(R.id.sharePriceEditText);
         Button addStockButton = (Button) v.findViewById(R.id.addStockButton);
+        previousBuysListView = (ExpandableListView) v.findViewById(R.id.previousBuysListView);
         addStockButton.setOnClickListener(this);
+        populatePreviousBoughtStock();
+
+
         return v;
+    }
+
+    private void populatePreviousBoughtStock() {
+        listDataHeader = new ArrayList<>();
+        listHash = new HashMap<>();
+        listDataHeader.add("Bought Stock");
+
+        SQLiteDatabase db = getActivity().openOrCreateDatabase("Pennyroyal", getActivity().MODE_PRIVATE, null);
+        Cursor cursor =  db.rawQuery("SELECT id FROM profiles WHERE name = '" + preferences.getString("profile", "") + "' LIMIT 1", null);
+        int profileIdIndex = cursor.getColumnIndex("id");
+        if(cursor!=null && cursor.getCount()>0) {
+            cursor.moveToFirst();
+            do {
+                profileId = cursor.getInt(profileIdIndex);
+            } while (cursor.moveToNext());
+        }
+        cursor =  db.rawQuery("SELECT * FROM buys WHERE profile = " + profileId, null);
+        int codeIndex = cursor.getColumnIndex("code");
+        int priceIndex = cursor.getColumnIndex("price");
+        int holdingsIndex = cursor.getColumnIndex("holdings");
+        List<String> list = new ArrayList<>();
+        if(cursor!=null && cursor.getCount()>0) {
+            cursor.moveToFirst();
+            do {
+                String code = cursor.getString(codeIndex);
+                String price = String.valueOf(cursor.getDouble(priceIndex));
+                String holdings = String.valueOf(cursor.getInt(holdingsIndex));
+                list.add(code + ": " + holdings + " shares @ $" + price);
+            } while (cursor.moveToNext());
+        }
+        listHash.put(listDataHeader.get(0), list);
+        listAdapter = new ExpandableListAdapter(getActivity(), listDataHeader, listHash);
+        previousBuysListView.setAdapter(listAdapter);
+        if(list.size() == 0) {
+            previousBuysListView.setVisibility(View.INVISIBLE);
+        }
     }
 
     @Override
@@ -78,7 +131,7 @@ public class AddStockFragment extends Fragment implements View.OnClickListener {
         if (stockCode == null || boughtShares.matches("") || priceBought.matches("")) {
             Toast.makeText(getActivity(), "Please Fill in all the above fields", Toast.LENGTH_SHORT).show();
         } else {
-            int profileId = 0;
+
             SQLiteDatabase db = getActivity().openOrCreateDatabase("Pennyroyal", getActivity().MODE_PRIVATE, null);
             db.execSQL("CREATE TABLE IF NOT EXISTS buys " +
                     "(id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
@@ -87,15 +140,6 @@ public class AddStockFragment extends Fragment implements View.OnClickListener {
                     "price DECIMAL(6, 4) NOT NULL, " +
                     "holdings INTEGER NOT NULL)");
             try {
-                Cursor cursor =  db.rawQuery("SELECT id FROM profiles WHERE name = '" + preferences.getString("profile", "") + "' LIMIT 1", null);
-                int profileIdIndex = cursor.getColumnIndex("id");
-                if(cursor!=null && cursor.getCount()>0) {
-                    cursor.moveToFirst();
-                    do {
-                        profileId = cursor.getInt(profileIdIndex);
-                    } while (cursor.moveToNext());
-                }
-
                 if (profileId != 0) {
                     db.execSQL("INSERT INTO buys (profile, code, price, holdings) VALUES " +
                             "('" + profileId + "', " +
@@ -108,8 +152,8 @@ public class AddStockFragment extends Fragment implements View.OnClickListener {
                 //Fragment addStockFragment = new AddStockFragment();
                 //FragmentManager transaction = getActivity().getSupportFragmentManager();
                 //transaction.beginTransaction().replace(R.id.fragment, addStockFragment).commit();
-            } catch (SQLiteConstraintException sqlException) {
-                Toast.makeText(getActivity(), "This profile name already exists.", Toast.LENGTH_SHORT).show();
+            } catch (SQLiteException sqlException) {
+                Toast.makeText(getActivity(), "Unable to add stock purchase.", Toast.LENGTH_SHORT).show();
             } catch (Exception e) {
                 Toast.makeText(getActivity(), "Unknown error occurred.", Toast.LENGTH_SHORT).show();
                 Log.i("Error", e.getMessage());

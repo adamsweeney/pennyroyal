@@ -28,6 +28,7 @@
             android:layout_marginBottom="15dp"
             android:layout_marginLeft="15dp"
             android:layout_marginRight="15dp"
+            android:backgroundTint="@color/colorAccent"
             android:hint="@string/stock_hint"
             android:textColor="@android:color/white"
             android:textColorHint="@color/colorAccent" />
@@ -41,6 +42,7 @@
             android:layout_marginBottom="15dp"
             android:layout_marginLeft="15dp"
             android:layout_marginRight="15dp"
+            android:backgroundTint="@color/colorAccent"
             android:ems="10"
             android:hint="@string/bought_shares"
             android:inputType="number"
@@ -55,6 +57,7 @@
             android:layout_below="@+id/sharesEditText"
             android:layout_marginLeft="15dp"
             android:layout_marginRight="15dp"
+            android:backgroundTint="@color/colorAccent"
             android:ems="10"
             android:hint="@string/price_bought"
             android:inputType="numberDecimal"
@@ -74,6 +77,16 @@
             android:text="Add"
             android:onClick="addStock"
             android:textColor="@android:color/white" />
+
+        <ExpandableListView
+            android:id="@+id/previousBuysListView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_alignParentStart="true"
+            android:layout_below="@+id/addStockButton"
+            android:layout_marginLeft="15dp"
+            android:layout_marginRight="15dp"
+            android:layout_marginTop="15dp" />
 
     </RelativeLayout>
 
