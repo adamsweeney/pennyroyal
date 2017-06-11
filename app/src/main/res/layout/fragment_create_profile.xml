@@ -1,0 +1,56 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.jibstream.pennyroyalapp.CreateProfileFragment">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/colorPrimaryDark">
+
+        <TextView
+            android:id="@+id/textView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginTop="61dp"
+            android:gravity="center"
+            android:text="Please Create a Profile"
+            android:textColor="@android:color/white"
+            android:textSize="18sp" />
+
+        <EditText
+            android:id="@+id/profileEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/textView"
+            android:layout_centerHorizontal="true"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginTop="11dp"
+            android:ems="10"
+            android:hint="Profile Name..."
+            android:inputType="textPersonName"
+            android:textColor="@android:color/white"
+            android:textColorHint="@color/colorAccent" />
+
+        <Button
+            android:id="@+id/createProfileButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/profileEditText"
+            android:layout_centerHorizontal="true"
+            android:layout_margin="15dp"
+            android:layout_marginTop="11dp"
+            android:background="@color/colorPrimary"
+            android:elevation="0dp"
+            android:onClick="createProfile"
+            android:text="Create"
+            android:textColor="@android:color/white" />
+    </RelativeLayout>
+
+</FrameLayout>

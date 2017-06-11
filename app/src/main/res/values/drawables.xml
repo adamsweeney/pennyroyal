@@ -1,0 +1,10 @@
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
+    <item name="ic_menu_dashboard" type="drawable">@drawable/ic_insert_chart_black</item>
+    <item name="ic_menu_portfolio" type="drawable">@drawable/ic_folder</item>
+    <item name="ic_menu_wish_list" type="drawable">@drawable/ic_lightbulb</item>
+    <item name="ic_menu_alerts" type="drawable">@drawable/ic_notifications</item>
+    <item name="ic_menu_settings" type="drawable">@drawable/ic_settings</item>
+    <item name="ic_menu_switch" type="drawable">@drawable/ic_group</item>
+    <item name="ic_menu_about" type="drawable">@drawable/ic_info</item>
+    <item name="ic_menu_help" type="drawable">@drawable/ic_help</item>
+</resources>

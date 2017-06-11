@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">Pennyroyal</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="action_settings">Settings</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="stock_hint">Find Stock...</string>
+    <string name="bought_shares">Bought Shares</string>
+    <string name="price_bought">Price</string>
+</resources>

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group android:checkableBehavior="single"
+        android:id="@+id/commonGroup">
+        <item
+            android:id="@+id/nav_dashboard"
+            android:icon="@drawable/ic_insert_chart_black"
+            android:title="Dashboard" />
+        <item
+            android:id="@+id/nav_portfolio"
+            android:icon="@drawable/ic_folder"
+            android:title="Portfolio" />
+        <item
+            android:id="@+id/nav_wish_list"
+            android:icon="@drawable/ic_lightbulb"
+            android:title="Wish List" />
+        <item
+            android:id="@+id/nav_alerts"
+            android:icon="@drawable/ic_notifications"
+            android:title="Alerts" />
+
+        <item
+            android:id="@+id/nav_settings"
+            android:icon="@drawable/ic_settings"
+            android:title="Settings" />
+    </group>
+
+    <group android:checkableBehavior="single"
+        android:id="@+id/infoGroup">
+        <item
+            android:id="@+id/nav_switch"
+            android:icon="@drawable/ic_group"
+            android:title="Switch Profiles" />
+        <item
+            android:id="@+id/nav_about"
+            android:icon="@drawable/ic_info"
+            android:title="About" />
+        <item
+            android:id="@+id/nav_help"
+            android:icon="@drawable/ic_help"
+            android:title="Help" />
+    </group>
+
+</menu>
