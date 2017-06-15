@@ -43,10 +43,11 @@ import java.util.List;
 
 public class AddStockFragment extends Fragment implements View.OnClickListener {
 
-    String stockCode;
-    ArrayList<String> stocks;
+    StockInfo selectedStock;
+    ArrayList<StockInfo> stocks;
     SharedPreferences preferences;
     int profileId;
+    List<String> boughtStockList;
 
     AutoCompleteTextView stockAutoComplete;
     EditText boughtSharesEditText;
@@ -68,6 +69,7 @@ public class AddStockFragment extends Fragment implements View.OnClickListener {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View v =  inflater.inflate(R.layout.fragment_add_stock, container, false);
+        boughtStockList = new ArrayList<>();
         preferences = getActivity().getSharedPreferences(getActivity().getPackageName(), Context.MODE_PRIVATE);
         stockAutoComplete = (AutoCompleteTextView) v.findViewById(R.id.stockCompleteTextView);
         boughtSharesEditText = (EditText) v.findViewById(R.id.sharesEditText);
@@ -75,10 +77,27 @@ public class AddStockFragment extends Fragment implements View.OnClickListener {
         Button addStockButton = (Button) v.findViewById(R.id.addStockButton);
         previousBuysListView = (ExpandableListView) v.findViewById(R.id.previousBuysListView);
         addStockButton.setOnClickListener(this);
+        createBuysTable();
         populatePreviousBoughtStock();
-
+        //SQLiteDatabase db = getActivity().openOrCreateDatabase("Pennyroyal", getActivity().MODE_PRIVATE, null);
+        //db.execSQL("DROP TABLE IF EXISTS buys");
 
         return v;
+    }
+
+    private void createBuysTable() {
+        SQLiteDatabase db = getActivity().openOrCreateDatabase("Pennyroyal", getActivity().MODE_PRIVATE, null);
+
+        db.execSQL("CREATE TABLE IF NOT EXISTS buys " +
+                "(id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
+                "profile INTEGER NOT NULL, " +
+                "code VARCHAR NOT NULL, " +
+                "name VARCHAR NOT NULL, " +
+                "exchange VARCHAR NOT NULL, " +
+                "price DECIMAL(6, 4) NOT NULL, " +
+                "holdings INTEGER NOT NULL, " +
+                "commission DECIMAL(6, 4))");
+        db.close();
     }
 
     private void populatePreviousBoughtStock() {
@@ -99,22 +118,25 @@ public class AddStockFragment extends Fragment implements View.OnClickListener {
         int codeIndex = cursor.getColumnIndex("code");
         int priceIndex = cursor.getColumnIndex("price");
         int holdingsIndex = cursor.getColumnIndex("holdings");
-        List<String> list = new ArrayList<>();
         if(cursor!=null && cursor.getCount()>0) {
             cursor.moveToFirst();
             do {
                 String code = cursor.getString(codeIndex);
                 String price = String.valueOf(cursor.getDouble(priceIndex));
                 String holdings = String.valueOf(cursor.getInt(holdingsIndex));
-                list.add(code + ": " + holdings + " shares @ $" + price);
+                boughtStockList.add(formatBoughtStockText(code, price, holdings));
             } while (cursor.moveToNext());
         }
-        listHash.put(listDataHeader.get(0), list);
+        listHash.put(listDataHeader.get(0), boughtStockList);
         listAdapter = new ExpandableListAdapter(getActivity(), listDataHeader, listHash);
         previousBuysListView.setAdapter(listAdapter);
-        if(list.size() == 0) {
+        if(boughtStockList.size() == 0) {
             previousBuysListView.setVisibility(View.INVISIBLE);
         }
+    }
+
+    private String formatBoughtStockText(String code, String price, String holdings) {
+        return code + ": " + holdings + " shares @ $" + price;
     }
 
     @Override
@@ -128,25 +150,24 @@ public class AddStockFragment extends Fragment implements View.OnClickListener {
     public void addStock(View view) {
         String boughtShares = boughtSharesEditText.getText().toString();
         String priceBought = priceBoughtEditText.getText().toString();
-        if (stockCode == null || boughtShares.matches("") || priceBought.matches("")) {
+        if (selectedStock == null || boughtShares.matches("") || priceBought.matches("")) {
             Toast.makeText(getActivity(), "Please Fill in all the above fields", Toast.LENGTH_SHORT).show();
         } else {
-
             SQLiteDatabase db = getActivity().openOrCreateDatabase("Pennyroyal", getActivity().MODE_PRIVATE, null);
-            db.execSQL("CREATE TABLE IF NOT EXISTS buys " +
-                    "(id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
-                    "profile INTEGER NOT NULL, " +
-                    "code VARCHAR NOT NULL, " +
-                    "price DECIMAL(6, 4) NOT NULL, " +
-                    "holdings INTEGER NOT NULL)");
             try {
                 if (profileId != 0) {
-                    db.execSQL("INSERT INTO buys (profile, code, price, holdings) VALUES " +
+                    db.execSQL("INSERT INTO buys (profile, code, name, exchange, price, holdings) VALUES " +
                             "('" + profileId + "', " +
-                            "'" + stockCode + "', " +
+                            "'" + selectedStock.code + "', " +
+                            "'" + selectedStock.name + "', " +
+                            "'" + selectedStock.exchange + "', " +
                             "'" + priceBought + "', " +
                             "'" + boughtShares + "')");
                 }
+                boughtStockList.add(formatBoughtStockText(selectedStock.code, priceBought, boughtShares));
+                listHash.put(listDataHeader.get(0), boughtStockList);
+                listAdapter.notifyDataSetChanged();
+                Toast.makeText(getActivity(), selectedStock.name + " Added", Toast.LENGTH_SHORT).show();
                 //preferences.edit().putString("profile", profileName.getText().toString()).apply();
                 // Create new fragment and transaction
                 //Fragment addStockFragment = new AddStockFragment();
@@ -174,7 +195,7 @@ public class AddStockFragment extends Fragment implements View.OnClickListener {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                stockCode = null;
+                selectedStock = null;
             }
 
             @Override
@@ -187,8 +208,7 @@ public class AddStockFragment extends Fragment implements View.OnClickListener {
         stockAutoComplete.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                String[] stockName = stocks.get(position).split(" - ");
-                stockCode = stockName[0];
+                selectedStock = (StockInfo) parent.getAdapter().getItem(position);
                 //TextView companyName = (TextView)getView().findViewById(R.id.companyNameTextView);
                 //companyName.setText(stockName[1]);
                 //companyPrice.setText("Retreiving Price...");
@@ -255,16 +275,33 @@ public class AddStockFragment extends Fragment implements View.OnClickListener {
                     if(code.matches("")) {
                         continue;
                     }
-                    stocks.add(code + " - " + jsonPart.getString("n"));
+                    stocks.add(new StockInfo(jsonPart.getString("n"), code, jsonPart.getString("e")));
                 }
 
-                ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, stocks);
+                ArrayAdapter<StockInfo> adapter = new ArrayAdapter<StockInfo>(getActivity(), android.R.layout.simple_list_item_1, stocks);
                 stockAutoComplete.setAdapter(adapter);
                 adapter.notifyDataSetChanged();
             } catch (JSONException e) {
                 e.printStackTrace();
             }
 
+        }
+    }
+
+    public static class StockInfo {
+        private String name;
+        private String code;
+        private String exchange;
+
+        public StockInfo(String name, String code, String exchange) {
+            this.name = name;
+            this.code = code;
+            this.exchange = exchange;
+        }
+
+        @Override
+        public String toString() {
+            return code + " - " + name;
         }
     }
 
