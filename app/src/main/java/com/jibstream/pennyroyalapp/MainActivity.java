@@ -2,17 +2,35 @@ package com.jibstream.pennyroyalapp;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ArrayAdapter;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.HashMap;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -24,6 +42,7 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -56,6 +75,7 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
+
     @Override
     public void onBackPressed() {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -83,10 +103,15 @@ public class MainActivity extends AppCompatActivity
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             return true;
+        } else if (id == R.id.add_stock) {
+            AddStockFragment addStockFragment = new AddStockFragment();
+            FragmentManager transaction = getSupportFragmentManager();
+            transaction.beginTransaction().replace(R.id.fragment, addStockFragment).commit();
         }
 
         return super.onOptionsItemSelected(item);
     }
+
 
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
@@ -100,10 +125,12 @@ public class MainActivity extends AppCompatActivity
             transaction.beginTransaction().replace(R.id.fragment, dashboardFragment).commit();
             // Handle the camera action
         } else if (id == R.id.nav_portfolio) {
-            CreateProfileFragment createProfile = new CreateProfileFragment();
+            /*CreateProfileFragment createProfile = new CreateProfileFragment();
             FragmentManager transaction = getSupportFragmentManager();
-            transaction.beginTransaction().replace(R.id.fragment, createProfile).commit();
-
+            transaction.beginTransaction().replace(R.id.fragment, createProfile).commit();*/
+            PortfolioFragment portfolioFragment = new PortfolioFragment();
+            FragmentManager transaction = getSupportFragmentManager();
+            transaction.beginTransaction().replace(R.id.fragment, portfolioFragment).commit();
         } else if (id == R.id.nav_wish_list) {
 
         } else if (id == R.id.nav_alerts) {

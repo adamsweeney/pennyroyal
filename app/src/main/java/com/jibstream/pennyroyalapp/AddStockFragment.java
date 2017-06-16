@@ -79,6 +79,7 @@ public class AddStockFragment extends Fragment implements View.OnClickListener {
         addStockButton.setOnClickListener(this);
         createBuysTable();
         populatePreviousBoughtStock();
+        getActivity().setTitle("Add Stock");
         //SQLiteDatabase db = getActivity().openOrCreateDatabase("Pennyroyal", getActivity().MODE_PRIVATE, null);
         //db.execSQL("DROP TABLE IF EXISTS buys");
 

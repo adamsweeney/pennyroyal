@@ -6,8 +6,7 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@color/colorPrimaryDark">
+        android:layout_height="match_parent">
 
         <TextView
             android:id="@+id/textView"
@@ -20,7 +19,7 @@
             android:layout_marginTop="61dp"
             android:gravity="center"
             android:text="Please Create a Profile"
-            android:textColor="@android:color/white"
+            android:textColor="@color/colorText"
             android:textSize="18sp" />
 
         <EditText
@@ -35,7 +34,7 @@
             android:ems="10"
             android:hint="Profile Name..."
             android:inputType="textPersonName"
-            android:textColor="@android:color/white"
+            android:textColor="@color/colorText"
             android:textColorHint="@color/colorAccent" />
 
         <Button
@@ -46,11 +45,10 @@
             android:layout_centerHorizontal="true"
             android:layout_margin="15dp"
             android:layout_marginTop="11dp"
-            android:background="@color/colorPrimary"
             android:elevation="0dp"
             android:onClick="createProfile"
             android:text="Create"
-            android:textColor="@android:color/white" />
+            android:textColor="@color/colorText" />
     </RelativeLayout>
 
 </FrameLayout>

@@ -7,4 +7,5 @@
     <item name="ic_menu_switch" type="drawable">@drawable/ic_group</item>
     <item name="ic_menu_about" type="drawable">@drawable/ic_info</item>
     <item name="ic_menu_help" type="drawable">@drawable/ic_help</item>
+    <item name="ic_menu_add" type="drawable">@drawable/ic_add</item>
 </resources>

@@ -30,7 +30,7 @@
             android:layout_marginRight="15dp"
             android:backgroundTint="@color/colorAccent"
             android:hint="@string/stock_hint"
-            android:textColor="@android:color/white"
+            android:textColor="@color/colorText"
             android:textColorHint="@color/colorAccent" />
 
         <EditText
@@ -46,7 +46,7 @@
             android:ems="10"
             android:hint="@string/bought_shares"
             android:inputType="number"
-            android:textColor="@android:color/white"
+            android:textColor="@color/colorText"
             android:textColorHint="@color/colorAccent" />
 
         <EditText
@@ -61,7 +61,7 @@
             android:ems="10"
             android:hint="@string/price_bought"
             android:inputType="numberDecimal"
-            android:textColor="@android:color/white"
+            android:textColor="@color/colorText"
             android:textColorHint="@color/colorAccent" />
 
         <Button
@@ -76,7 +76,7 @@
             android:background="@color/colorPrimary"
             android:text="Add"
             android:onClick="addStock"
-            android:textColor="@android:color/white" />
+            android:textColor="@color/colorText" />
 
         <ExpandableListView
             android:id="@+id/previousBuysListView"
